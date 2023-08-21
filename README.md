@@ -5,7 +5,7 @@
 
 ```sh
 ### submit tx
-cargo run --bin demo-cli submit-transaction keys/token_deployer_key.json DemoModule "{ \"UpdateName\": { \"name\": \"gm\" } }" 0 http://127.0.0.1:12345
+cargo run --bin demo-cli submit-transaction keys/deployer.json DemoModule "{ \"UpdateName\": { \"name\": \"gm\" } }" 0 http://127.0.0.1:12345
 cargo run --bin demo-cli publish-batch http://127.0.0.1:12345
 
 ### query data
@@ -18,7 +18,7 @@ curl -X POST -H "Content-Type: application/json" -d '{"jsonrpc":"2.0","method":"
 ```sh
 
 ### create batch
-cargo run --bin demo-cli generate-transaction-from-json keys/token_deployer_key.json DemoModule "{ \"UpdateName\": { \"name\": \"gm\" } }" 0 > /tmp/update_name_tx.dat
+cargo run --bin demo-cli generate-transaction-from-json keys/deployer.json DemoModule "{ \"UpdateName\": { \"name\": \"gm\" } }" 0 > /tmp/update_name_tx.dat
 cargo run --bin demo-cli make-batch /tmp/update_name_tx.dat > /tmp/test_blob_tx.dat
 
 ### submit batch
