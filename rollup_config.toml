@@ -1,0 +1,32 @@
+# We define the rollup's genesis to occur at Celestia block number `start_height`. The rollup will ignore
+# any Celestia blocks before this height
+start_height = 1
+
+# The namespace used by the rollup to store its data. This is a raw slice of 8 bytes.
+# The rollup stores its data in the namespace b"sov-test" on Celestia. Which in this case is encoded using the
+# ascii representation of each character.
+da_rollup_namespace = [115, 111, 118, 45, 116, 101, 115, 116]
+
+# The DA address of the sequencer (for now we use a centralized sequencer) in the tests.
+# Here this is the address of the sequencer on the celestia blockchain.
+da_sequencer_address = "celestia1w7wcupk5gswj25c0khnkey5fwmlndx6t5aarmk"
+
+
+[da]
+# The JWT used to authenticate with the celestia light client. Instructions for generating this token can be found in the README
+celestia_rpc_auth_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBbGxvdyI6WyJwdWJsaWMiLCJyZWFkIiwid3JpdGUiLCJhZG1pbiJdfQ.Nbb0u7pKfX1Kl5Hvgt3g4-SOdS3h2nPLjMhYs1CrRHA"
+# The address of the *trusted* Celestia light client to interact with
+celestia_rpc_address = "http://127.0.0.1:26658"
+# The largest response the rollup will accept from the Celestia node. Defaults to 100 MB
+max_celestia_response_body_size = 104_857_600
+# The maximum time to wait for a response to an RPC query against Celestia node. Defaults to 60 seconds.
+celestia_rpc_timeout_seconds = 60
+
+[runner.storage]
+# The path to the rollup's data directory. Paths that do not begin with `/` are interpreted as relative paths.
+path = "../../data"
+
+[rpc_config]
+# the host and port to bind the rpc server for
+bind_host = "127.0.0.1"
+bind_port = 12345

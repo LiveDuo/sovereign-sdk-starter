@@ -1,0 +1,36 @@
+[workspace]
+resolver = "2"
+members = [
+    "src/demo-stf",
+    "src/demo-rollup",
+    "src/demo-module",
+]
+exclude = []
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.66"
+
+[workspace.dependencies]
+jmt = { git = "https://github.com/penumbra-zone/jmt", commit = "46b4b00" }
+async-trait = "0.1.71"
+anyhow = "1.0.68"
+borsh = { version = "0.10.3", features = ["rc", "bytes"] }
+bytes = "1.2.1"
+hex = "0.4.3"
+prometheus = { version = "0.13.3", default-features = false }
+proptest = "1.0.0"
+rand = "0.8"
+serde = { version = "1.0.137", features = ["derive", "rc"] }
+serde_json = { version = "1.0" }
+sha2 = "0.10.6"
+thiserror = "1.0.38"
+tracing = "0.1.37"
+clap = { version = "4.2.7", features = ["derive"] }
+toml = "0.7.3"
+jsonrpsee = {version = "0.18.2", features = ["jsonrpsee-types"] }
+schemars = { version = "0.8.12", features = ["derive"] }
+tempfile = "3.5"
+tokio = { version = "1", features = ["full"] }
+

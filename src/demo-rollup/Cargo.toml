@@ -1,0 +1,49 @@
+[package]
+name = "demo-rollup"
+version = { workspace = true }
+edition = { workspace = true }
+resolver = "2"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+async-trait = { workspace = true }
+anyhow = { workspace = true }
+borsh = { workspace = true, features = ["bytes"] }
+jsonrpsee = { workspace = true, features = ["http-client", "server"] }
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+tracing = { workspace = true }
+hex = { workspace = true }
+bytes = { workspace = true }
+jmt = { workspace = true }
+tokio = { workspace = true }
+tracing-subscriber = "0.3.17"
+futures = "0.3"
+
+jupiter = {  git = "https://github.com/Sovereign-Labs/sovereign-sdk", rev = "6371c32" }
+risc0-adapter = { git = "https://github.com/Sovereign-Labs/sovereign-sdk", rev = "6371c32" }
+demo-stf = { path = "../demo-stf" }
+sov-rollup-interface = { git = "https://github.com/Sovereign-Labs/sovereign-sdk", rev = "6371c32", features = ["mocks"] }
+sov-sequencer = {  git = "https://github.com/Sovereign-Labs/sovereign-sdk", rev = "6371c32" }
+sov-db = { git = "https://github.com/Sovereign-Labs/sovereign-sdk", rev = "6371c32"}
+sov-modules-stf-template = { git = "https://github.com/Sovereign-Labs/sovereign-sdk", rev = "6371c32" } # no features available
+sov-stf-runner = { git = "https://github.com/Sovereign-Labs/sovereign-sdk", rev = "6371c32" }
+sov-bank = { git = "https://github.com/Sovereign-Labs/sovereign-sdk", rev = "6371c32", default-features = false }
+sov-election = {  git = "https://github.com/Sovereign-Labs/sovereign-sdk", rev = "6371c32", default-features = false }
+sov-modules-api = { git = "https://github.com/Sovereign-Labs/sovereign-sdk", rev = "6371c32" }
+sov-value-setter = { git = "https://github.com/Sovereign-Labs/sovereign-sdk", rev = "6371c32", default-features = false }
+sov-state = { git = "https://github.com/Sovereign-Labs/sovereign-sdk", rev = "6371c32" }
+
+
+[dev-dependencies]
+sha2 = { workspace = true }
+reqwest = "0.11"
+tendermint = "0.32"
+tempfile = { workspace = true }
+proptest = { workspace = true }
+clap = { workspace = true }
+sov-rollup-interface = { git = "https://github.com/Sovereign-Labs/sovereign-sdk", rev = "6371c32" , features = ["fuzzing"] }
+prometheus = "0.11.0"
+prettytable-rs = "^0.10"
+criterion = "0.5.1"

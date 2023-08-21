@@ -1,0 +1,11 @@
+/target
+
+.idea/
+
+target/
+
+.DS_Store
+
+data/
+/.vscode/*
+/src/demo-rollup/demo_data
