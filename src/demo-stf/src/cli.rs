@@ -132,16 +132,15 @@ impl PrivKeyAndAddress {
         }
     }
 
-    fn generate_and_save_to_file(priv_key_path: &Path) -> anyhow::Result<String> {
+    fn generate_and_save_to_file(priv_key_path: &Path) -> anyhow::Result<()> {
         let priv_key = Self::generate();
         let data = serde_json::to_string(&priv_key)?;
-        fs::create_dir_all(priv_key_path)?;
-        let path = Path::new(priv_key_path).join(format!("{}.json", priv_key.address));
-        fs::write(&path, data)?;
+        fs::create_dir_all(priv_key_path.parent().unwrap())?;
+        fs::write(&priv_key_path, data)?;
 
-        let path_str = path.into_os_string().into_string().unwrap();
+        let path_str = priv_key_path.to_str().unwrap();
         println!("private key written to path: {}", path_str);
-        Ok(path_str)
+        Ok(())
     }
 }
 
@@ -332,5 +331,5 @@ pub async fn main() -> Result<(), anyhow::Error> {
 }
 
 #[cfg(test)]
-#[path = "tests/sov_sli.rs"]
+#[path = "tests/sov_cli.rs"]
 mod tests;

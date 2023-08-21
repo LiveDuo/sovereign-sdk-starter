@@ -29,9 +29,8 @@ mod test {
         let tempdir = tempfile::tempdir().unwrap();
         let mut test_demo = TestDemo::with_path(tempdir.path().to_path_buf());
 
-        let key_folder = PathBuf::from("/tmp/sovereign");
-        let key_path_str = PrivKeyAndAddress::generate_and_save_to_file(&key_folder).unwrap();
-        let key_path = PathBuf::from(key_path_str);
+        let key_path = PathBuf::from("/tmp/sovereign/key.json");
+        PrivKeyAndAddress::generate_and_save_to_file(&key_path).unwrap();
         let test_data = read_test_data(&key_path);
 
         execute_txs(&mut test_demo.demo, test_demo.config, test_data.data);
@@ -51,18 +50,17 @@ mod test {
         let tempdir = tempfile::tempdir().unwrap();
         let mut test_demo = TestDemo::with_path(tempdir.path().to_path_buf());
 
-        let key_folder = PathBuf::from("/tmp/sovereign");
-        let key_path_str = PrivKeyAndAddress::generate_and_save_to_file(&key_folder).unwrap();
+        let key_path = PathBuf::from("/tmp/sovereign/key.json");
+        PrivKeyAndAddress::generate_and_save_to_file(&key_path).unwrap();
 
         let test_tx = serialize_call(&Commands::GenerateTransactionFromJson {
-            sender_priv_key_path: key_path_str.to_owned(),
+            sender_priv_key_path: key_path.to_str().unwrap().to_owned(),
             module_name: "DemoModule".into(),
             call_data: "{ \"UpdateName\": { \"name\": \"gm\" } }".to_owned(),
             nonce: 0,
         })
         .unwrap();
 
-        let key_path = PathBuf::from(key_path_str);
         let mut test_data = read_test_data(&key_path);
         test_data.data.pop();
         test_data.data.pop();

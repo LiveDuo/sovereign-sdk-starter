@@ -1,11 +1,6 @@
-/target
 
-.idea/
-
-target/
+target
+.vscode
+keys
 
 .DS_Store
-
-data/
-/.vscode/*
-/src/demo-rollup/demo_data
