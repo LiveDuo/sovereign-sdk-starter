@@ -28,7 +28,11 @@ mod test {
         // Tempdir is created here, so it will be deleted only after test is finished.
         let tempdir = tempfile::tempdir().unwrap();
         let mut test_demo = TestDemo::with_path(tempdir.path().to_path_buf());
-        let test_data = read_test_data();
+
+        let key_folder = PathBuf::from("/tmp/sovereign");
+        let key_path_str = PrivKeyAndAddress::generate_and_save_to_file(&key_folder).unwrap();
+        let key_path = PathBuf::from(key_path_str);
+        let test_data = read_test_data(&key_path);
 
         execute_txs(&mut test_demo.demo, test_demo.config, test_data.data);
 
@@ -46,18 +50,20 @@ mod test {
     fn test_update_name() {
         let tempdir = tempfile::tempdir().unwrap();
         let mut test_demo = TestDemo::with_path(tempdir.path().to_path_buf());
+
+        let key_folder = PathBuf::from("/tmp/sovereign");
+        let key_path_str = PrivKeyAndAddress::generate_and_save_to_file(&key_folder).unwrap();
+
         let test_tx = serialize_call(&Commands::GenerateTransactionFromJson {
-            sender_priv_key_path: make_test_path("token_deployer_key.json")
-                .to_str()
-                .unwrap()
-                .into(),
+            sender_priv_key_path: key_path_str.to_owned(),
             module_name: "DemoModule".into(),
             call_data: "{ \"UpdateName\": { \"name\": \"gm\" } }".to_owned(),
             nonce: 0,
         })
         .unwrap();
 
-        let mut test_data = read_test_data();
+        let key_path = PathBuf::from(key_path_str);
+        let mut test_data = read_test_data(&key_path);
         test_data.data.pop();
         test_data.data.pop();
 
@@ -74,6 +80,9 @@ mod test {
 
         let batch = Batch::deserialize(&mut &blob[..]).expect("must be valid blob");
         execute_txs(&mut test_demo.demo, test_demo.config, batch.txs);
+
+        fs::remove_dir_all("/tmp/sovereign").unwrap();
+
     }
 
     // Test helpers
@@ -110,20 +119,9 @@ mod test {
         data: Vec<RawTx>,
     }
 
-    fn make_test_path<P: AsRef<Path>>(path: P) -> PathBuf {
-        let mut sender_path = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-        sender_path.push("..");
-        sender_path.push("..");
-        sender_path.push("keys");
+    fn read_test_data(key_path: &PathBuf) -> TestData {
 
-        sender_path.push(path);
-
-        sender_path
-    }
-
-    fn read_test_data() -> TestData {
-        let sender_priv_key_path = make_test_path("token_deployer_key.json");
-        let sender_priv_key = deserialize_priv_key(sender_priv_key_path).unwrap();
+        let sender_priv_key = deserialize_priv_key(key_path).unwrap();
         let serialized_tx = SerializedTx::new(
             &sender_priv_key,
             "DemoModule",

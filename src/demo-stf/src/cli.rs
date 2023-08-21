@@ -132,17 +132,16 @@ impl PrivKeyAndAddress {
         }
     }
 
-    fn generate_and_save_to_file(priv_key_path: &Path) -> anyhow::Result<()> {
+    fn generate_and_save_to_file(priv_key_path: &Path) -> anyhow::Result<String> {
         let priv_key = Self::generate();
         let data = serde_json::to_string(&priv_key)?;
         fs::create_dir_all(priv_key_path)?;
         let path = Path::new(priv_key_path).join(format!("{}.json", priv_key.address));
         fs::write(&path, data)?;
-        println!(
-            "private key written to path: {}",
-            path.into_os_string().into_string().unwrap()
-        );
-        Ok(())
+
+        let path_str = path.into_os_string().into_string().unwrap();
+        println!("private key written to path: {}", path_str);
+        Ok(path_str)
     }
 }
 
