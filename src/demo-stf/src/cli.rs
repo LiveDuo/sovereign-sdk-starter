@@ -147,13 +147,12 @@ impl PrivKeyAndAddress {
 }
 
 impl SerializedTx {
-    fn new<P: AsRef<Path>>(
-        sender_priv_key_path: P,
+    fn new(
+        sender_priv_key: &DefaultPrivateKey,
         module_name: &str,
         call_data: &str,
         nonce: u64,
     ) -> anyhow::Result<SerializedTx> {
-        let sender_priv_key = Self::deserialize_priv_key(sender_priv_key_path)?;
         let sender_address = sender_priv_key.pub_key().to_address();
         let message = parse_call_message_json::<DefaultContext>(module_name, &call_data)?;
 
@@ -167,23 +166,23 @@ impl SerializedTx {
         })
     }
 
-    fn deserialize_priv_key<P: AsRef<Path>>(
-        sender_priv_key_path: P,
-    ) -> anyhow::Result<DefaultPrivateKey> {
-        let priv_key_data = std::fs::read_to_string(&sender_priv_key_path).with_context(|| {
-            format!(
-                "Failed to read private key from {:?}",
-                sender_priv_key_path.as_ref()
-            )
-        })?;
+}
 
-        let sender_priv_key_data = serde_json::from_str::<PrivKeyAndAddress>(&priv_key_data)?;
+fn deserialize_priv_key<P: AsRef<Path>>(
+    sender_priv_key_path: P,
+) -> anyhow::Result<DefaultPrivateKey> {
+    let priv_key_data = std::fs::read_to_string(&sender_priv_key_path).with_context(|| {
+        format!(
+            "Failed to read private key from {:?}",
+            sender_priv_key_path.as_ref()
+        )
+    })?;
 
-        Ok(DefaultPrivateKey::from_hex(
-            &sender_priv_key_data.hex_priv_key,
-        )?)
-    }
+    let sender_priv_key_data = serde_json::from_str::<PrivKeyAndAddress>(&priv_key_data)?;
 
+    Ok(DefaultPrivateKey::from_hex(
+        &sender_priv_key_data.hex_priv_key,
+    )?)
 }
 
 fn serialize_call(command: &Commands) -> Result<String, anyhow::Error> {
@@ -194,8 +193,9 @@ fn serialize_call(command: &Commands) -> Result<String, anyhow::Error> {
         nonce,
     } = command
     {
+        let sender_priv_key = deserialize_priv_key(sender_priv_key_path)?;
         let serialized =
-            SerializedTx::new(&sender_priv_key_path, module_name, &call_data, *nonce)
+            SerializedTx::new(&sender_priv_key, module_name, &call_data, *nonce)
                 .context("Call message serialization error")?;
 
         Ok(hex::encode(serialized.raw.data))
@@ -240,8 +240,9 @@ pub async fn main() -> Result<(), anyhow::Error> {
             nonce,
             rpc_endpoint,
         } => {
+            let sender_priv_key = deserialize_priv_key(sender_priv_key_path)?;
             let serialized =
-                SerializedTx::new(&sender_priv_key_path, &module_name, &call_data, nonce)
+                SerializedTx::new(&sender_priv_key, &module_name, &call_data, nonce)
                     .context("Unable to serialize call transaction")?;
 
             let request = SubmitTransaction::new(serialized.raw.data);
@@ -305,7 +306,7 @@ pub async fn main() -> Result<(), anyhow::Error> {
             }
 
             UtilCommands::ShowPublicKey { private_key_path } => {
-                let sender_priv_key = SerializedTx::deserialize_priv_key(private_key_path)
+                let sender_priv_key = deserialize_priv_key(private_key_path)
                     .context("Failed to get private key from file")?;
                 let sender_address: Address = sender_priv_key.pub_key().to_address();
                 println!("{}", sender_address);

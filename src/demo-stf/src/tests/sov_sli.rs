@@ -122,8 +122,10 @@ mod test {
     }
 
     fn read_test_data() -> TestData {
+        let sender_priv_key_path = make_test_path("token_deployer_key.json");
+        let sender_priv_key = deserialize_priv_key(sender_priv_key_path).unwrap();
         let serialized_tx = SerializedTx::new(
-            make_test_path("token_deployer_key.json"),
+            &sender_priv_key,
             "DemoModule",
             "{ \"UpdateName\": { \"name\": \"gm\" } }",
             0,
