@@ -44,7 +44,7 @@ docker exec sov-celestia-local celestia-appd tx bank send validator ${VALIDATOR_
 
 ### update config
 docker exec sov-celestia-local /celestia bridge auth admin --node.store /bridge ### get auth token
-sed -i '' 's/^\(celestia_rpc_auth_token = \)"[^"]*"/\1"${AUTH_TOKEN}"/' rollup_config.toml
+sed -i '' 's/^\(celestia_rpc_auth_token = \)"[^"]*"/\1"${AUTH_TOKEN}"/' node_config.toml
 
 ### Run rollup
 cargo run --bin demo-cli util create-private-key keys/deployer.json

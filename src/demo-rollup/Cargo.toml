@@ -18,6 +18,7 @@ hex = { workspace = true }
 bytes = { workspace = true }
 jmt = { workspace = true }
 tokio = { workspace = true }
+toml = { workspace = true }
 tracing-subscriber = "0.3.17"
 futures = "0.3"
 

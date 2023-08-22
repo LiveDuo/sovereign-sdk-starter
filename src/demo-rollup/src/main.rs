@@ -15,7 +15,7 @@ use risc0_adapter::host::Risc0Verifier;
 use sov_db::ledger_db::LedgerDB;
 // use demo_stf::{SequencerOutcome, TxEffect};
 use sov_modules_stf_template::{SequencerOutcome, TxEffect};
-use demo_stf::app::RollupDaConfig;
+use demo_stf::app::ConsensusConfig;
 use sov_rollup_interface::da::DaSpec;
 use sov_rollup_interface::services::da::DaService;
 use sov_rollup_interface::zk::ValidityConditionChecker;
@@ -91,14 +91,13 @@ impl ValidityConditionChecker<ChainValidityCondition> for CelestiaChainChecker {
 async fn main() -> Result<(), anyhow::Error> {
     let rollup_config_path = env::args()
         .nth(1)
-        .unwrap_or_else(|| "rollup_config.toml".to_string());
+        .unwrap_or_else(|| "node_config.toml".to_string());
 
     debug!("Starting demo rollup with config {}", rollup_config_path);
     let rollup_config: RollupConfig =
         from_toml_path(&rollup_config_path).context("Failed to read rollup configuration")?;
     
-    let rollup_da_config: RollupDaConfig =
-        from_toml_path(&rollup_config_path).context("Failed to read rollup configuration")?;
+    let consensus_params: ConsensusConfig = toml::from_str(include_str!("../../../consensus_config.toml"))?;
 
     // Initializing logging
     let subscriber = tracing_subscriber::fmt()
@@ -110,7 +109,7 @@ async fn main() -> Result<(), anyhow::Error> {
 
     let ledger_db = initialize_ledger(&rollup_config.runner.storage.path);
 
-    let rollup_namespace = NamespaceId(rollup_da_config.da_rollup_namespace);
+    let rollup_namespace = NamespaceId(consensus_params.da_rollup_namespace);
     let da_service = CelestiaService::new(
         rollup_config.da.clone(),
         RollupParams {
@@ -133,7 +132,7 @@ async fn main() -> Result<(), anyhow::Error> {
 
     // let storage = app.get_storage();
     // storage.isEmty()
-    let genesis_config = get_genesis_config(&rollup_da_config.da_sequencer_address);
+    let genesis_config = get_genesis_config(&consensus_params.da_sequencer_address);
 
     let mut runner = StateTransitionRunner::new(
         rollup_config,

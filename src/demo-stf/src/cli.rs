@@ -6,7 +6,7 @@ use std::{fs, vec};
 use anyhow::Context;
 use borsh::BorshSerialize;
 use clap::Parser;
-use demo_stf::app::RollupDaConfig;
+use demo_stf::app::ConsensusConfig;
 use demo_stf::runtime::{borsh_encode_cli_tx, parse_call_message_json, CliTransactionParser};
 use jsonrpsee::core::client::ClientT;
 use jsonrpsee::http_client::HttpClientBuilder;
@@ -16,7 +16,6 @@ use sov_modules_api::transaction::Transaction;
 use sov_modules_api::{AddressBech32, PrivateKey, PublicKey, Spec};
 use sov_modules_stf_template::RawTx;
 use sov_sequencer::SubmitTransaction;
-use sov_stf_runner::from_toml_path;
 type C = DefaultContext;
 type Address = <C as Spec>::Address;
 
@@ -316,10 +315,9 @@ pub async fn main() -> Result<(), anyhow::Error> {
             }
             UtilCommands::PrintNamespace => {
 
-                let rollup_da_config: RollupDaConfig =
-                    from_toml_path("rollup_config.toml").context("Failed to read rollup configuration")?;
+                let consensus_params: ConsensusConfig = toml::from_str(include_str!("../../../consensus_config.toml"))?;
                 
-                println!("{}", hex::encode(rollup_da_config.da_rollup_namespace));
+                println!("{}", hex::encode(consensus_params.da_rollup_namespace));
             }
         },
         Commands::GenerateTransaction(cli_tx) => {
